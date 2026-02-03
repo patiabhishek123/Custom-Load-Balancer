@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/patiabhishek123/Customizable_load_blancer/server"
+	"github.com/patiabhishek123/Custom-Load-Balancer/server"
 )
 
 func main(){
-	server.Test()
+	server.RunServer(9)
 }
