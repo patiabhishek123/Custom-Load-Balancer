@@ -1,3 +1,3 @@
-module github.com/patiabhishek123/Customizable_load_blancer
+module github.com/patiabhishek123/Custom-Load-Balancer
 
 go 1.25.5
