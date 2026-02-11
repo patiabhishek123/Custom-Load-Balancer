@@ -1,15 +1,17 @@
 package loadbalancer
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"strconv"
+	"time"
 )
 
 var (
-	baseURL = "http://localhost:808"
+	baseURL = "http://localhost:800"
 )
 
 type RoundRobin struct {
@@ -31,20 +33,23 @@ func MakeLoadBalancer(amount int) {
 	 lb:= RoundRobin{}
 	 ep:= Endpoints{}
 
+	 fmt.Println("MakeLdB func hit")
 	// Server + Router
 	router := http.NewServeMux()
 	server := http.Server{
 		Addr:    ":8090",
 		Handler: router,
+		ReadTimeout: 300*time.Minute,
 	}
 
 	// Creating the endpoints
 	for i := 0; i < amount; i++ {
 		ep.List = append(ep.List, createEndpoint(baseURL, i))
+		fmt.Println(ep.List[len(ep.List)-1])
 	}
 
 	// Handler Functions
-	router.HandleFunc("/loadbalancer", makeRequest(&lb, &ep))
+	router.HandleFunc("/roundrobin", makeRequest(&lb, &ep))
 
 	// Listen and Server
 	log.Fatal(server.ListenAndServe())
