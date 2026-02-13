@@ -1,13 +1,13 @@
 package balancer
 
 import (
-	"net/url"
+	// "net/url"
 	"sync"
 	"time"
 )
 
 type Backend struct {
-	URL               url.URL
+	URL               string
 	Healthy           bool
 	ActiveConnections int64
 	Weight            int
@@ -15,7 +15,7 @@ type Backend struct {
 	mu                sync.Mutex
 }
 
-func NewBackend(url url.URL) *Backend{
+func NewBackend(url string) *Backend{
 	return &Backend{
 		URL: url,
 		Healthy: true,
