@@ -15,8 +15,47 @@ type Backend struct {
 	mu                sync.Mutex
 }
 
-func (b *Backend) IncrementConnections()
-func (b *Backend) DecrementConnections()
-func (b *Backend) IsHealthy() bool
-func (b *Backend) SetHealthy()
+func NewBackend(url url.URL) *Backend{
+	return &Backend{
+		URL: url,
+		Healthy: true,
+		Weight: 1,
+	}
+}
+
+func (b *Backend) IncrementConnections(){
+	b.mu.Lock()
+	b.ActiveConnections++
+	b.mu.Unlock()
+}
+
+
+func (b *Backend) DecrementConnections(){
+	b.mu.Lock()
+	if b.ActiveConnections>0{
+		b.ActiveConnections--
+	}
+	b.mu.Unlock()
+}
+
+
+func (b *Backend) IsHealthy() bool{
+	b.mu.Lock()
+	defer
+	b.mu.Unlock()
+
+	return b.Healthy
+}
+
+func (b *Backend) SetHealthy(state bool){
+	b.mu.Lock()
+	if b.Healthy!=state{
+		b.Healthy=state
+	}
+	b.mu.Unlock()
+}
+
+
+
+
 
