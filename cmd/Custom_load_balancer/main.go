@@ -24,8 +24,13 @@ pool.AddBackend(balancer.NewBackend("http://localhost:8081"))
 pool.AddBackend(balancer.NewBackend("http://localhost:8082"))
 pool.AddBackend(balancer.NewBackend("http://localhost:8083"))
 
+strategy := balancer.NewRoundRobin(pool)
+// or
+// strategy := balancer.NewLeastConn(pool)
+
 for i := 0; i < 10; i++ {
-	b := pool.GetNextBackendRR()
+	b := strategy.NextBackend()
 	fmt.Println(b.URL)
 }
+
 }
