@@ -1,5 +1,5 @@
 package balancer
 
-type strategy interface{
+type Strategy interface{
 	NewBackend() *Backend
 }

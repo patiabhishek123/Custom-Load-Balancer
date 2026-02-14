@@ -6,6 +6,13 @@ import (
 	"time"
 )
 
+type CircuitState int
+const (
+	Closed CircuitState =iota
+	Open
+	HalfOpen
+)
+
 type Backend struct {
 	URL               string
 	Healthy           bool
@@ -13,6 +20,9 @@ type Backend struct {
 	Weight            int
 	ResponseTime      time.Duration
 	mu                sync.Mutex
+	CircuitState      CircuitState
+	FailureCount	  int
+	LastFailureTime	  time.Time
 }
 
 func NewBackend(url string) *Backend{
@@ -55,7 +65,22 @@ func (b *Backend) SetHealthy(state bool){
 	b.mu.Unlock()
 }
 
+func (b *Backend) SetCircuitState(state CircuitState){
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	b.CircuitState=state
+}
 
+func (b *Backend) SetLastFailureTime(time time.Time){
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	b.LastFailureTime=time
+}
 
+func (b *Backend) ResetFailure(){
+	b.mu.Lock()
+	defer b.mu.Unlock()
 
+	b.FailureCount=0
+}
 
