@@ -1,16 +1,20 @@
 package circuit
 
 import (
+	
+	"sync"
 	"time"
+
 	"github.com/patiabhishek123/Custom-Load-Balancer/internal/balancer"
 )
 
 type Breaker struct {
 	failureThreashold int 
 	cooldown          time.Duration
+	mu                sync.Mutex
 }
 //
-func (br *Breaker) NewBreaker(failureThreashold int,cooldown time.Duration) *Breaker{
+func  NewBreaker(failureThreashold int,cooldown time.Duration) *Breaker{
 	return &Breaker{
 		failureThreashold: failureThreashold,
 		cooldown: cooldown,

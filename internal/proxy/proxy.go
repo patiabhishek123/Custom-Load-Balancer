@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-
+	"fmt"
 	"github.com/patiabhishek123/Custom-Load-Balancer/internal/balancer"
 	"github.com/patiabhishek123/Custom-Load-Balancer/internal/circuit"
 )
@@ -23,7 +23,8 @@ func NewLoadBalancer(strategy balancer.Strategy,breaker *circuit.Breaker)*LoadBa
 }
 
 func (lb *LoadBalancer) ServeHTTP(w http.ResponseWriter, r *http.Request){
-	backend := lb.strategy.NewBackend()
+	backend := lb.strategy.NextBackend()
+	fmt.Println("Forwarding to:", backend.URL)
 
 	if backend == nil{
 		http.Error(w,"No healthy backends",http.StatusServiceUnavailable)

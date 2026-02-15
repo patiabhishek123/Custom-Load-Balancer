@@ -1,12 +1,15 @@
 package main
 
 import (
+	//"fmt"
+	//"http"
+	//"log"
 	"fmt"
-	"http"
-	"log"
+	"net/http"
 	"time"
 
 	//"github.com/patiabhishek123/Custom-Load-Balancer/internal/circuit"
+	//"github.com/docker/docker/integration-cli/checker"
 	"github.com/patiabhishek123/Custom-Load-Balancer/internal/balancer"
 	"github.com/patiabhishek123/Custom-Load-Balancer/internal/circuit"
 	"github.com/patiabhishek123/Custom-Load-Balancer/internal/proxy"
@@ -40,7 +43,9 @@ func main() {
 	// }
 
 	breaker :=circuit.NewBreaker(3,10*time.Second)
-	lb :=proxy.NewLoadBalancer(strategy,breaker)
-	log.Println("Load balancer running on :8090")
-	log.Fatal(http.ListenAndServe(":8090", lb))
+
+	lb:=proxy.NewLoadBalancer(strategy,breaker)
+	fmt.Println("Starting load balancer on :8090")
+	http.ListenAndServe(":8090",lb)
+	
 }
