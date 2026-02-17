@@ -2,6 +2,7 @@ package balancer
 
 import (
 	// "net/url"
+	"net"
 	"sync"
 	"time"
 )
@@ -23,6 +24,7 @@ type Backend struct {
 	CircuitState      CircuitState
 	FailureCount	  int
 	LastFailureTime	  time.Time
+				  
 }
 
 func NewBackend(url string) *Backend{
@@ -84,3 +86,20 @@ func (b *Backend) ResetFailure(){
 	b.FailureCount=0
 }
 
+//for health check
+func (b *Backend) isBackendHealthy(){
+	timeout :=3*time.Second
+
+	conn,err:=net.DialTimeout("tcp",b.URL,timeout)
+
+	b.mu.Lock()
+	defer b.mu.Unlock()
+
+	if err!=nil{
+		b.Healthy=false
+		return
+
+	}
+	b.Healthy=true
+	conn.Close()
+}

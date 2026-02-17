@@ -1,5 +1,7 @@
 package balancer
 
+import "time"
+
 type leastConn struct{
 	pool *BackendPool
 }

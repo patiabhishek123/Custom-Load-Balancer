@@ -52,3 +52,12 @@ func (p *BackendPool) GetNextBackendRR()*Backend{
 	index := atomic.AddUint64(&p.counter,1)
 	return healthy[index%uint64(len(healthy))]
 }
+
+func (p *BackendPool) GetAllBackends() []*Backend {
+    p.mu.RLock()
+    defer p.mu.RUnlock()
+
+    result := make([]*Backend, len(p.backends))
+    copy(result, p.backends)
+    return result
+}
