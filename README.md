@@ -2,7 +2,7 @@
 
 **Velo** is a production-grade, fully configurable load balancer written in Go. It provides intelligent request distribution across multiple backend servers with built-in health checking, circuit breaking, and comprehensive metrics.
 
-![Velo](assets/LoadBalncer.png)
+![Velo](assets/VELO_LOGO.png)
 
 ## Table of Contents
 
