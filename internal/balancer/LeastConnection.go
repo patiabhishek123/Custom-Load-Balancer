@@ -2,33 +2,37 @@ package balancer
 
 // import "time"
 
-type leastConn struct{
+type leastConn struct {
 	pool *BackendPool
 }
 
-func NewLeastCount(pool *BackendPool)*leastConn{
+func NewLeastCount(pool *BackendPool) *leastConn {
 	return &leastConn{
 		pool: pool,
 	}
 }
 
-func (lc *leastConn) NextBackend() *Backend{
+func (lc *leastConn) NextBackend() *Backend {
 
-	healthy:= lc.pool.GetHealthyBackends()
+	healthy := lc.pool.GetHealthyBackends()
 
-	if len(healthy)==0 {
+	if len(healthy) == 0 {
 		return nil
 	}
 
 	var selected *Backend
-	minConn :=int64(-1)
-	for _,b :=range healthy{
-		conn :=b.ActiveConnections
+	minConn := int64(-1)
+	for _, b := range healthy {
+		conn := b.ActiveConnections
 
-		if minConn ==-1 || conn < minConn {
+		if minConn == -1 || conn < minConn {
 			minConn = conn
-			selected=b
+			selected = b
 		}
 	}
 	return selected
+}
+
+func (lc *leastConn) Pool() *BackendPool {
+	return lc.pool
 }

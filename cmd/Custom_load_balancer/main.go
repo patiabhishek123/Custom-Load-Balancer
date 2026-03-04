@@ -12,6 +12,7 @@ import (
 	//"github.com/docker/docker/integration-cli/checker"
 	"github.com/patiabhishek123/Custom-Load-Balancer/internal/balancer"
 	"github.com/patiabhishek123/Custom-Load-Balancer/internal/circuit"
+	"github.com/patiabhishek123/Custom-Load-Balancer/internal/metrics"
 	"github.com/patiabhishek123/Custom-Load-Balancer/internal/proxy"
 )
 
@@ -26,7 +27,9 @@ func main() {
 	//     loadbalancer.MakeLoadBalancer(5)
 
 	pool := balancer.NewBackendPool()
-   // dynamic choosing of number of balancers
+	// register pool with metrics
+	metrics.RegisterPool(pool)
+	// dynamic choosing of number of balancers
 	pool.AddBackend(balancer.NewBackend("http://localhost:8081"))
 	pool.AddBackend(balancer.NewBackend("http://localhost:8082"))
 	pool.AddBackend(balancer.NewBackend("http://localhost:8083"))
@@ -34,7 +37,6 @@ func main() {
 	strategy := balancer.NewRoundRobin(pool)
 	//or
 	//strategy := balancer.NewLeastCount(pool)
-	
 
 	// for i := 0; i < 10; i++ {
 	// 	b := strategy.NextBackend()
@@ -42,11 +44,14 @@ func main() {
 	// }
 
 	go pool.HealthCheck()
-   
-   breaker :=circuit.NewBreaker(3,10*time.Second) 
 
-	lb:=proxy.NewLoadBalancer(strategy,breaker)
+	breaker := circuit.NewBreaker(3, 10*time.Second)
+
+	lb := proxy.NewLoadBalancer(strategy, breaker)
 	fmt.Println("Starting load balancer on :8090")
-	http.ListenAndServe(":8090",lb)
-	
+	mux := http.NewServeMux()
+	mux.Handle("/metrics", http.HandlerFunc(metrics.Handler))
+	mux.Handle("/", lb)
+	http.ListenAndServe(":8090", mux)
+
 }

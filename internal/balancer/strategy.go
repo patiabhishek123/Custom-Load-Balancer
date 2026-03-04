@@ -1,5 +1,6 @@
 package balancer
 
-type Strategy interface{
+type Strategy interface {
 	NextBackend() *Backend
+	Pool() *BackendPool
 }

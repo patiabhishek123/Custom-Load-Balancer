@@ -89,24 +89,27 @@ package balancer
 
 import "sync/atomic"
 
-
-type  RoundRobin struct{
+type RoundRobin struct {
 	pool *BackendPool
 }
 
-func NewRoundRobin(pool *BackendPool) *RoundRobin{
+func NewRoundRobin(pool *BackendPool) *RoundRobin {
 	return &RoundRobin{
 		pool: pool,
 	}
 }
 
-func (r *RoundRobin) NextBackend() *Backend{
-	healthy:=r.pool.GetHealthyBackends()
+func (r *RoundRobin) NextBackend() *Backend {
+	healthy := r.pool.GetHealthyBackends()
 
-	if len(healthy) ==0{
+	if len(healthy) == 0 {
 		return nil
 	}
 
-	index :=atomic.AddUint64(&r.pool.counter,1)
+	index := atomic.AddUint64(&r.pool.counter, 1)
 	return healthy[index%uint64(len(healthy))]
+}
+
+func (r *RoundRobin) Pool() *BackendPool {
+	return r.pool
 }
