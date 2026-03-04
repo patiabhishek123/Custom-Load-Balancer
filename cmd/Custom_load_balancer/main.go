@@ -20,7 +20,6 @@ import (
 
 func main() {
 	// go server.RunServer(5)
-
 	// Giving servers time to start
 	//     time.Sleep(100 * time.Millisecond)
 
@@ -42,9 +41,10 @@ func main() {
 	// 	fmt.Println(b.URL)
 	// }
 
-	breaker :=circuit.NewBreaker(3,10*time.Second) 
-	
- 
+	go pool.HealthCheck()
+   
+   breaker :=circuit.NewBreaker(3,10*time.Second) 
+
 	lb:=proxy.NewLoadBalancer(strategy,breaker)
 	fmt.Println("Starting load balancer on :8090")
 	http.ListenAndServe(":8090",lb)
